@@ -13,6 +13,7 @@ const openai = new OpenAI({
 
 app.post("/ask", async (req, res) => {
   const { question } = req.body;
+  console.log("📨 Received question:", question);
 
   try {
     const chatCompletion = await openai.chat.completions.create({
@@ -20,11 +21,13 @@ app.post("/ask", async (req, res) => {
       messages: [{ role: "user", content: question }],
     });
 
+    console.log("🧠 OpenAI response:", JSON.stringify(chatCompletion, null, 2));
+
     const answer = chatCompletion.choices?.[0]?.message?.content?.trim() || "No answer received.";
     res.json({ answer });
   } catch (error) {
-    console.error("OpenAI API Error:", error);
-    res.status(500).json({ error: "Failed to get response from OpenAI." });
+    console.error("🔥 OpenAI API Error:", error);
+    res.status(500).json({ error: "Failed to get response from OpenAI.", details: error.message });
   }
 });
 
